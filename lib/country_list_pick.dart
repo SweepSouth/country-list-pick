@@ -12,17 +12,18 @@ export 'support/code_country.dart';
 export 'country_selection_theme.dart';
 
 class CountryListPick extends StatefulWidget {
-  CountryListPick(
-      {this.onChanged,
-      this.initialSelection,
-      this.appBar,
-      this.pickerBuilder,
-      this.countryBuilder,
-      this.theme,
-      this.useUiOverlay = true,
-      this.useSafeArea = false});
+  CountryListPick({
+    this.onChanged,
+    required this.initialSelection,
+    this.appBar,
+    this.pickerBuilder,
+    this.countryBuilder,
+    this.theme,
+    this.useUiOverlay = true,
+    this.useSafeArea = false,
+  });
 
-  final String? initialSelection;
+  final ValueNotifier<String> initialSelection;
   final ValueChanged<CountryCode?>? onChanged;
   final PreferredSizeWidget? appBar;
   final Widget Function(BuildContext context, CountryCode? countryCode)?
@@ -58,18 +59,30 @@ class _CountryListPickState extends State<CountryListPick> {
 
   @override
   void initState() {
-    if (widget.initialSelection != null) {
-      selectedItem = elements.firstWhere(
-          (e) =>
-              (e.code.toUpperCase() ==
-                  widget.initialSelection!.toUpperCase()) ||
-              (e.dialCode == widget.initialSelection),
-          orElse: () => elements[0] as CountryCode);
-    } else {
-      selectedItem = elements[0];
-    }
+    selectedItem = elements.firstWhere(
+        (e) =>
+            (e.code.toUpperCase() ==
+                widget.initialSelection.value.toUpperCase()) ||
+            (e.dialCode == widget.initialSelection),
+        orElse: () => elements[0] as CountryCode);
+    widget.initialSelection.addListener(() {
+      setState(() {
+        selectedItem = elements.firstWhere(
+            (e) =>
+                (e.code.toUpperCase() ==
+                    widget.initialSelection.value.toUpperCase()) ||
+                (e.dialCode == widget.initialSelection),
+            orElse: () => elements[0] as CountryCode);
+      });
+    });
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    widget.initialSelection.removeListener(() {});
+    super.dispose();
   }
 
   void _awaitFromSelectScreen(BuildContext context, PreferredSizeWidget? appBar,

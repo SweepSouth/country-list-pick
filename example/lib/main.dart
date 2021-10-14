@@ -1,4 +1,3 @@
-
 import 'package:country_list_pick/country_list_pick.dart';
 import 'package:flutter/material.dart';
 
@@ -10,6 +9,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  ValueNotifier<String> countryCode = ValueNotifier("KE");
   @override
   void initState() {
     super.initState();
@@ -23,6 +23,12 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Country Code Pick'),
           backgroundColor: Colors.amber,
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            countryCode.value = "ZA";
+          },
+          child: Icon(Icons.add),
         ),
         body: Center(
           child: CountryListPick(
@@ -51,9 +57,7 @@ class _MyAppState extends State<MyApp> {
               showEnglishName: false,
               labelColor: Colors.blueAccent,
             ),
-            initialSelection: '+62',
-            // or
-            // initialSelection: 'US'
+            initialSelection: countryCode,
             onChanged: (CountryCode code) {
               print(code.name);
               print(code.code);
